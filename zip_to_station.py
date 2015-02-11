@@ -164,6 +164,7 @@ def better_map_zip_to_station(region_list, weather_station_list):
     long_station_tree = station_list_to_tree(weather_station_list, "longitude")
     print("lat map size:", lat_station_tree.size())
     print("long map size:", long_station_tree.size())
+    count = 0
     for region in region_list:
         # make a list of all stations within distance degrees
         distance = 0.1
@@ -173,7 +174,7 @@ def better_map_zip_to_station(region_list, weather_station_list):
             long_stations = long_station_tree.find_station(float(region.longitude), distance)
             lat_stations = lat_station_tree.find_station(float(region.latitude), distance)
             close_stations = list(set(lat_stations) & set(long_stations))
-            distance = distance + 0.1
+            distance = distance*2
         # start with large initial distance
         shortest_distance = 1e20
         for close_station in close_stations:
@@ -183,6 +184,9 @@ def better_map_zip_to_station(region_list, weather_station_list):
                 zip_to_station_map[region.zip_code] \
                     = close_station.station_info["xml_url"]
                 shortest_distance = distance
+        count = count + 1
+        if count % 1000 == 0:
+            print(count, "Stations matched")
     return zip_to_station_map
     
 def map_zip_to_station(region_list, weather_station_list):
